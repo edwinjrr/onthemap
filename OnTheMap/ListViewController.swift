@@ -19,9 +19,7 @@ class ListViewController: UITableViewController {
 
         /* Get the shared URL session */
         session = NSURLSession.sharedSession()
-    }
-
-    override func viewWillAppear(animated: Bool) {
+        
         ParseClient.sharedInstance().getStudents() { (results, error) in
             if let results = results {
                 self.students = results
@@ -33,14 +31,11 @@ class ListViewController: UITableViewController {
                 println(error)
             }
         }
-
     }
 
     // MARK: - Table view data source
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete method implementation.
-        // Return the number of rows in the section.
         return students.count
     }
     
@@ -51,9 +46,20 @@ class ListViewController: UITableViewController {
         var cell = tableView.dequeueReusableCellWithIdentifier(cellReuseIdentifier) as! UITableViewCell
         
         cell.textLabel!.text = "\(student.firstName)" + " " + "\(student.lastName)"
+        cell.detailTextLabel!.text = student.mediaURL
         cell.imageView!.image = UIImage(named: "pin")
-
+        
         return cell
     }
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        
+        let student = students[indexPath.row]
+        let app = UIApplication.sharedApplication()
+        app.openURL(NSURL(string: student.mediaURL)!)
+    }
 
+    @IBAction func logOut(sender: AnyObject) {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
 }
