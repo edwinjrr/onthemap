@@ -22,6 +22,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //Adding two bar button items in the right side of the navigation bar.
+        let addLocationButton = UIBarButtonItem(image: UIImage(named: "pin"), style: UIBarButtonItemStyle.Plain, target: self, action: nil)
+        let refreshButton = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: nil)
+        self.navigationItem.setRightBarButtonItems([refreshButton, addLocationButton], animated: true)
+        
         /* Get the shared URL session */
         session = NSURLSession.sharedSession()
         

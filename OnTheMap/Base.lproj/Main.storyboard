@@ -121,7 +121,6 @@
                                 <action selector="logOut:" destination="bs8-Su-cmi" id="K4E-Ya-N20"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="Drd-Hf-fXd"/>
                     </navigationItem>
                     <connections>
                         <outlet property="mapView" destination="ekQ-7f-p5e" id="q2O-b0-7ZT"/>
@@ -140,7 +139,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="detailDisclosureButton" indentationWidth="10" reuseIdentifier="StudentTableViewCell" textLabel="qEQ-Au-DM5" detailTextLabel="Dlr-V2-EMI" style="IBUITableViewCellStyleSubtitle" id="K6s-QI-h6f">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="StudentTableViewCell" textLabel="qEQ-Au-DM5" detailTextLabel="Dlr-V2-EMI" style="IBUITableViewCellStyleSubtitle" id="K6s-QI-h6f">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="K6s-QI-h6f" id="zIf-2a-bdE">
                                     <autoresizingMask key="autoresizingMask"/>
@@ -172,7 +171,6 @@
                                 <action selector="logOut:" destination="Eau-cd-cKl" id="IA8-47-xaf"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="1Vz-fT-fco"/>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZZ3-sW-M7C" userLabel="First Responder" sceneMemberID="firstResponder"/>
