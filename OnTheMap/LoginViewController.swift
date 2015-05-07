@@ -101,6 +101,11 @@ class LoginViewController: UIViewController {
         })
     }
     
+    @IBAction func signUp(sender: AnyObject) {
+        let app = UIApplication.sharedApplication()
+        app.openURL(NSURL(string: "https://www.udacity.com/account/auth#!/signup")!)
+    }
+    
     func displayError(errorString: String?) {
         dispatch_async(dispatch_get_main_queue(), {
             if let errorString = errorString {

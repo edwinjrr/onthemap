@@ -22,10 +22,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //Adding two bar button items in the right side of the navigation bar.
-        let addLocationButton = UIBarButtonItem(image: UIImage(named: "pin"), style: UIBarButtonItemStyle.Plain, target: self, action: nil)
+        //Adding the bar button items of the navigation bar.
+        let addLocationButton = UIBarButtonItem(image: UIImage(named: "pin"), style: UIBarButtonItemStyle.Plain, target: self, action: "showInfoPostingView")
         let refreshButton = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: nil)
-        self.navigationItem.setRightBarButtonItems([refreshButton, addLocationButton], animated: true)
+        let logoutButton = UIBarButtonItem(title: "Logout", style: .Plain, target: self, action: "logout")
+        
+        self.navigationItem.leftBarButtonItem = logoutButton
+        self.navigationItem.rightBarButtonItems = [refreshButton, addLocationButton]
+        
         
         /* Get the shared URL session */
         session = NSURLSession.sharedSession()
@@ -33,9 +37,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         ParseClient.sharedInstance().getStudents() { (results, error) in
             if let results = results {
                 self.students = results
-//                dispatch_async(dispatch_get_main_queue()) {
-//                    self.mapView.reloadInputViews()
-//                }
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.mapView.reloadInputViews()
+                }
                 self.studentsLocations()
             }
             else {
@@ -111,10 +115,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-  
-    @IBAction func logOut(sender: AnyObject) {
+    func logout() {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
-  
+    func showInfoPostingView() {
+        let controller = self.storyboard!.instantiateViewControllerWithIdentifier("InfoPostingViewController") as! InfoPostingViewController
+        self.navigationController!.presentViewController(controller, animated: true, completion: nil)
+    }
+    
 }

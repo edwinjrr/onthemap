@@ -12,6 +12,7 @@
 		215ADA701AEEEA28006620ED /* ParseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215ADA6F1AEEEA28006620ED /* ParseClient.swift */; };
 		215ADA721AEEF9DC006620ED /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215ADA711AEEF9DC006620ED /* ListViewController.swift */; };
 		215ADA741AF0457C006620ED /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215ADA731AF0457C006620ED /* MapViewController.swift */; };
+		215ADA761AF19ACF006620ED /* InfoPostingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215ADA751AF19ACF006620ED /* InfoPostingViewController.swift */; };
 		21F3B1A91AE9A2C10090EA49 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F3B1A81AE9A2C10090EA49 /* AppDelegate.swift */; };
 		21F3B1AB1AE9A2C10090EA49 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F3B1AA1AE9A2C10090EA49 /* LoginViewController.swift */; };
 		21F3B1AE1AE9A2C10090EA49 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 21F3B1AC1AE9A2C10090EA49 /* Main.storyboard */; };
@@ -39,6 +40,7 @@
 		215ADA6F1AEEEA28006620ED /* ParseClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParseClient.swift; sourceTree = "<group>"; };
 		215ADA711AEEF9DC006620ED /* ListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
 		215ADA731AF0457C006620ED /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		215ADA751AF19ACF006620ED /* InfoPostingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoPostingViewController.swift; sourceTree = "<group>"; };
 		21F3B1A31AE9A2C10090EA49 /* OnTheMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OnTheMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		21F3B1A71AE9A2C10090EA49 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		21F3B1A81AE9A2C10090EA49 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 				21F3B1AA1AE9A2C10090EA49 /* LoginViewController.swift */,
 				215ADA711AEEF9DC006620ED /* ListViewController.swift */,
 				215ADA731AF0457C006620ED /* MapViewController.swift */,
+				215ADA751AF19ACF006620ED /* InfoPostingViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -284,6 +287,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				215ADA761AF19ACF006620ED /* InfoPostingViewController.swift in Sources */,
 				21F3B1D01AE9AA8A0090EA49 /* UdacityClient.swift in Sources */,
 				215ADA6C1AEEE8C3006620ED /* Student.swift in Sources */,
 				21F3B1AB1AE9A2C10090EA49 /* LoginViewController.swift in Sources */,

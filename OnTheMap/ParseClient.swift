@@ -65,6 +65,44 @@ class ParseClient : NSObject {
         task.resume()
     }
     
+    func postStudentLocation(mapString: String, mediaURL: String, latitude: Double, longitude: Double, completionHandler: (success: Bool, error: String?) -> Void) {
+        
+        /* 2. Build the URL */
+        let urlString = Constants.BaseURLSecure + "StudentLocation"
+        let url = NSURL(string: urlString)!
+        
+        /* Configure the request */
+        let request = NSMutableURLRequest(URL: url)
+        request.HTTPMethod = "POST"
+        request.addValue(Constants.ParseAppID, forHTTPHeaderField: "X-Parse-Application-Id")
+        request.addValue(Constants.RestApiKey, forHTTPHeaderField: "X-Parse-REST-Api-Key")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.HTTPBody = "{\"uniqueKey\": \"\(Constants.UniqueKey)\", \"firstName\": \"\(Constants.FirstName)\", \"lastName\": \"\(Constants.LastName)\",\"mapString\": \"\(mapString)\", \"mediaURL\": \"\(mediaURL)\",\"latitude\": \(latitude), \"longitude\": \(longitude)}".dataUsingEncoding(NSUTF8StringEncoding)
+        
+        /* Make the request */
+        let task = session.dataTaskWithRequest(request) { data, response, downloadError in
+
+            if let error = downloadError {
+                println("Could not complete the request \(error)")
+            } else {
+                
+                /* Parse the data */
+                var parsingError: NSError? = nil
+                let parsedResult = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parsingError) as! NSDictionary
+
+                /* Use the data */
+                if let status_code = parsedResult["status"] as? Int {
+                    completionHandler(success: false, error: "Could not submit student location.")
+                } else {
+                    completionHandler(success: true, error: nil)
+                }
+            }
+        }
+        
+        /* Start the request */
+        task.resume()
+    }
+    
     /* Helper function: Given a dictionary of parameters, convert to a string for a url */
     func escapedParameters(parameters: [String : AnyObject]) -> String {
         

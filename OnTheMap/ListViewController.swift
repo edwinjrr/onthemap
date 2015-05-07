@@ -17,14 +17,22 @@ class ListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //Adding two bar button items in the right side of the navigation bar.
+        //Adding the bar button items of the navigation bar.
         let addLocationButton = UIBarButtonItem(image: UIImage(named: "pin"), style: UIBarButtonItemStyle.Plain, target: self, action: nil)
-        let refreshButton = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: nil)
-        self.navigationItem.setRightBarButtonItems([refreshButton, addLocationButton], animated: true)
+        let refreshButton = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: "getStudentList")
+        let logoutButton = UIBarButtonItem(title: "Logout", style: .Plain, target: self, action: "logout")
+        
+        self.navigationItem.leftBarButtonItem = logoutButton
+        self.navigationItem.rightBarButtonItems = [refreshButton, addLocationButton]
 
         /* Get the shared URL session */
         session = NSURLSession.sharedSession()
         
+        self.getStudentList()
+        
+    }
+    
+    func getStudentList() {
         ParseClient.sharedInstance().getStudents() { (results, error) in
             if let results = results {
                 self.students = results
@@ -36,7 +44,6 @@ class ListViewController: UITableViewController {
                 println(error)
             }
         }
-        
     }
 
     // MARK: - Table view data source
@@ -65,7 +72,7 @@ class ListViewController: UITableViewController {
         app.openURL(NSURL(string: student.mediaURL)!)
     }
 
-    @IBAction func logOut(sender: AnyObject) {
+    func logout() {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
 }

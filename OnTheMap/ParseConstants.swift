@@ -18,6 +18,10 @@ extension ParseClient {
         // MARK: URLs
         static let BaseURLSecure : String = "https://api.parse.com/1/classes/"
         
+        // MARK: HTTP Body Objects
+        static let UniqueKey : String = "edwinjrr@hotmail.com" //Udacity account (user) id
+        static let FirstName : String = "Edwin"
+        static let LastName : String = "Rodriguez"
     }
     
     // MARK: - JSON Response Keys
