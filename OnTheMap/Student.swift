@@ -14,7 +14,7 @@ struct Student {
     var firstName = ""
     var lastName = ""
     var mediaURL = ""
-    var mapString = ""
+    //var mapString = ""
     var latitude = 0.0
     var longitude = 0.0
     
@@ -22,7 +22,7 @@ struct Student {
         firstName = dictionary["firstName"] as! String
         lastName = dictionary["lastName"] as! String
         mediaURL = dictionary["mediaURL"] as! String
-        mapString = dictionary["mapString"] as! String
+        //mapString = dictionary["mapString"] as! String
         latitude = dictionary["latitude"] as! Double
         longitude = dictionary["longitude"] as! Double
     }
