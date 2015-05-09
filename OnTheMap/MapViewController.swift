@@ -37,7 +37,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     func getStudentsList() {
-        ParseClient.sharedInstance().getStudents() { (results, error) in
+        Client.sharedInstance().getStudentsLocations() { (results, error) in
             if let results = results {
                 self.students = results
                 dispatch_async(dispatch_get_main_queue()) {

@@ -16,7 +16,6 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var loginButton: BorderedButton!
     @IBOutlet weak var debugTextLabel: UILabel!
     
-    var appDelegate: AppDelegate!
     var session: NSURLSession!
     
     var backgroundGradient: CAGradientLayer? = nil
@@ -30,9 +29,6 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        /* Get the app delegate */
-        appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         
         /* Get the shared URL session */
         session = NSURLSession.sharedSession()
@@ -82,7 +78,7 @@ class LoginViewController: UIViewController {
         } else if passwordTextField.text.isEmpty {
             debugTextLabel.text = "Password field is empty!"
         } else {
-            UdacityClient.sharedInstance().postSession(self.usernameTextField.text, password: self.passwordTextField.text) { (success, error) in
+            Client.sharedInstance().postSession(self.usernameTextField.text, password: self.passwordTextField.text) { (success, error) in
                 if success {
                     self.completeLogin()
                 }

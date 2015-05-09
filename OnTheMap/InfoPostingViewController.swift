@@ -47,6 +47,8 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
             self.studentMapString = self.mapStringTextField.text
             let regionRadius: CLLocationDistance = 2000
             var geocoder = CLGeocoder()
+            
+            //Forward Geocoding: From address to coordinates.
             geocoder.geocodeAddressString(studentMapString, completionHandler: {(placemarks: [AnyObject]!, error: NSError!) -> Void in
                 if let placemark = placemarks?[0] as? CLPlacemark {
                     let coordinateRegion = MKCoordinateRegionMakeWithDistance(placemark.location.coordinate, regionRadius, regionRadius)
@@ -95,7 +97,7 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
             studentMediaURL = mediaURLTextField.text
           
             if verifyURL(studentMediaURL) {
-                ParseClient.sharedInstance().postStudentLocation(studentMapString, mediaURL: studentMediaURL, latitude: studentLatitude, longitude: studentLongitude, completionHandler: { (success, error) -> Void in
+                Client.sharedInstance().postStudentLocation(studentMapString, mediaURL: studentMediaURL, latitude: studentLatitude, longitude: studentLongitude, completionHandler: { (success, error) -> Void in
                     if success {
                         self.dismissViewControllerAnimated(true, completion: nil)
                     }
