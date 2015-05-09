@@ -22,7 +22,7 @@ class ParseClient : NSObject {
         
         /* 1. Set the parameters */
         let methodParameters = [
-            "limit": 100
+            "limit": 50
         ]
         
         /* 2. Build the URL */
@@ -43,6 +43,8 @@ class ParseClient : NSObject {
                 
                 var parsingError: NSError? = nil
                 let parsedResult = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parsingError) as! NSDictionary
+                
+                //println(parsedResult)
                 
                 /* 6. Use the data! */
                 if let error = parsingError {

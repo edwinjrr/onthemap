@@ -7,24 +7,28 @@
 //
 
 import UIKit
-import MapKit
+//import MapKit
 
 struct Student {
     
-    var firstName = ""
-    var lastName = ""
-    var mediaURL = ""
-    //var mapString = ""
-    var latitude = 0.0
-    var longitude = 0.0
-    
+    var firstName: String!
+    var lastName: String!
+    var latitude: Double!
+    var longitude: Double!
+    var mediaURL: String!
+    var mapString: String!
+    var objectId: String!
+    var uniqueKey: String!
+
     init(dictionary: [String : AnyObject]) {
         firstName = dictionary["firstName"] as! String
         lastName = dictionary["lastName"] as! String
-        mediaURL = dictionary["mediaURL"] as! String
-        //mapString = dictionary["mapString"] as! String
         latitude = dictionary["latitude"] as! Double
         longitude = dictionary["longitude"] as! Double
+        mediaURL = dictionary["mediaURL"] as! String
+        mapString = dictionary["mapString"] as! String
+        objectId = dictionary["objectId"] as! String
+        uniqueKey = dictionary["uniqueKey"] as! String
     }
     
     static func studentsFromResults(results: [[String : AnyObject]]) -> [Student] {

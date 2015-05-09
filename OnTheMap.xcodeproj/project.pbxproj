@@ -41,6 +41,9 @@
 		215ADA711AEEF9DC006620ED /* ListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
 		215ADA731AF0457C006620ED /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		215ADA751AF19ACF006620ED /* InfoPostingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoPostingViewController.swift; sourceTree = "<group>"; };
+		219276D81AFD73390097E7F3 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Medium.ttf"; sourceTree = "<group>"; };
+		219276D91AFD73390097E7F3 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Regular.ttf"; sourceTree = "<group>"; };
+		219276DA1AFD73390097E7F3 /* Roboto-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Thin.ttf"; sourceTree = "<group>"; };
 		21F3B1A31AE9A2C10090EA49 /* OnTheMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OnTheMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		21F3B1A71AE9A2C10090EA49 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		21F3B1A81AE9A2C10090EA49 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -84,6 +87,16 @@
 			name = Parse;
 			sourceTree = "<group>";
 		};
+		219276DB1AFD733D0097E7F3 /* Font */ = {
+			isa = PBXGroup;
+			children = (
+				219276D81AFD73390097E7F3 /* Roboto-Medium.ttf */,
+				219276D91AFD73390097E7F3 /* Roboto-Regular.ttf */,
+				219276DA1AFD73390097E7F3 /* Roboto-Thin.ttf */,
+			);
+			name = Font;
+			sourceTree = "<group>";
+		};
 		21F3B19A1AE9A2C10090EA49 = {
 			isa = PBXGroup;
 			children = (
@@ -117,6 +130,7 @@
 		21F3B1A61AE9A2C10090EA49 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				219276DB1AFD733D0097E7F3 /* Font */,
 				21F3B1AC1AE9A2C10090EA49 /* Main.storyboard */,
 				21F3B1AF1AE9A2C10090EA49 /* Images.xcassets */,
 				21F3B1B11AE9A2C10090EA49 /* LaunchScreen.xib */,

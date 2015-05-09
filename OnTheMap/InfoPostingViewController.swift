@@ -10,17 +10,17 @@ import UIKit
 import MapKit
 import CoreLocation
 
-class InfoPostingViewController: UIViewController, MKMapViewDelegate {
+class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFieldDelegate {
 
     @IBOutlet weak var questionLabel: UILabel!
     @IBOutlet weak var mapStringTextField: UITextField!
     @IBOutlet weak var mapStringTextFieldView: UIView!
-    @IBOutlet weak var findOnTheMapButton: UIButton!
+    @IBOutlet weak var findOnTheMapButton: BorderedButton!
     @IBOutlet weak var cancelButton: UIButton!
     
     @IBOutlet weak var mediaURLTextField: UITextField!
     @IBOutlet weak var locationMapView: MKMapView!
-    @IBOutlet weak var submitButton: UIButton!
+    @IBOutlet weak var submitButton: BorderedButton!
     
     var studentMapString: String!
     var studentMediaURL: String!
@@ -32,7 +32,8 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate {
         
         self.mapStringTextFieldView.backgroundColor = UIColor(red: 0.20, green: 0.45, blue: 0.64, alpha: 1.0)
         
-        // Do any additional setup after loading the view.
+        mapStringTextField.delegate = self
+        mediaURLTextField.delegate = self
     }
 
     @IBAction func findOnTheMap(sender: AnyObject) {
@@ -98,4 +99,15 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate {
     @IBAction func cancelInfoPosting(sender: AnyObject) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
+        textField.placeholder = ""
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        
+        return true
+    }
+    
 }

@@ -4,7 +4,6 @@
 //
 //  Created by Edwin Rodriguez on 4/27/15.
 //  Copyright (c) 2015 Edwin Rodriguez. All rights reserved.
-//
 
 import UIKit
 
@@ -18,7 +17,7 @@ class ListViewController: UITableViewController {
         super.viewDidLoad()
         
         //Adding the bar button items of the navigation bar.
-        let addLocationButton = UIBarButtonItem(image: UIImage(named: "pin"), style: UIBarButtonItemStyle.Plain, target: self, action: nil)
+        let addLocationButton = UIBarButtonItem(image: UIImage(named: "pin"), style: UIBarButtonItemStyle.Plain, target: self, action: "showInfoPostingView")
         let refreshButton = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: "getStudentList")
         let logoutButton = UIBarButtonItem(title: "Logout", style: .Plain, target: self, action: "logout")
         
@@ -29,7 +28,6 @@ class ListViewController: UITableViewController {
         session = NSURLSession.sharedSession()
         
         self.getStudentList()
-        
     }
     
     func getStudentList() {
@@ -74,5 +72,10 @@ class ListViewController: UITableViewController {
 
     func logout() {
         self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func showInfoPostingView() {
+        let controller = self.storyboard!.instantiateViewControllerWithIdentifier("InfoPostingViewController") as! InfoPostingViewController
+        self.navigationController!.presentViewController(controller, animated: true, completion: nil)
     }
 }

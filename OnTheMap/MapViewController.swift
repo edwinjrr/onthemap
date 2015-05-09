@@ -24,16 +24,19 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         //Adding the bar button items of the navigation bar.
         let addLocationButton = UIBarButtonItem(image: UIImage(named: "pin"), style: UIBarButtonItemStyle.Plain, target: self, action: "showInfoPostingView")
-        let refreshButton = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: nil)
+        let refreshButton = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: "getStudentsList")
         let logoutButton = UIBarButtonItem(title: "Logout", style: .Plain, target: self, action: "logout")
         
         self.navigationItem.leftBarButtonItem = logoutButton
         self.navigationItem.rightBarButtonItems = [refreshButton, addLocationButton]
         
-        
         /* Get the shared URL session */
         session = NSURLSession.sharedSession()
         
+        self.getStudentsList()
+    }
+    
+    func getStudentsList() {
         ParseClient.sharedInstance().getStudents() { (results, error) in
             if let results = results {
                 self.students = results
@@ -46,8 +49,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 println(error)
             }
         }
-        
-
     }
     
     func studentsLocations() {
