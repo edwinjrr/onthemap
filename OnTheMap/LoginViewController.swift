@@ -82,7 +82,7 @@ class LoginViewController: UIViewController {
         } else if passwordTextField.text.isEmpty {
             debugTextLabel.text = "Password field is empty!"
         } else {
-            UdacityClient.sharedInstance().getSessionID(self.usernameTextField.text, password: self.passwordTextField.text) { (success, error) in
+            UdacityClient.sharedInstance().postSession(self.usernameTextField.text, password: self.passwordTextField.text) { (success, error) in
                 if success {
                     self.completeLogin()
                 }

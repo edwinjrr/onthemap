@@ -13,12 +13,16 @@ class UdacityClient : NSObject {
     /* Shared session */
     var session: NSURLSession
     
+    var userKey: String!
+    var userFirstName: String!
+    var userLastName: String!
+    
     override init() {
         session = NSURLSession.sharedSession()
         super.init()
     }
     
-    func getSessionID(username: String, password: String, completionHandler: (success: Bool, error: String?) -> Void) {
+    func postSession(username: String, password: String, completionHandler: (success: Bool, error: String?) -> Void) {
         
         /* Create a session */
         
@@ -49,7 +53,11 @@ class UdacityClient : NSObject {
                 if let status_code = parsedResult["status"] as? Int {
                     completionHandler(success: false, error: "Invalid Login Credentials")
                 } else {
-                    completionHandler(success: true, error: nil)
+                    if let userAccount = parsedResult["account"] as? [String : AnyObject] {
+                        self.userKey = userAccount["key"] as! String
+                        self.getPublicUserData()
+                        completionHandler(success: true, error: nil)
+                    }
                 }
             }
         }
@@ -59,46 +67,71 @@ class UdacityClient : NSObject {
         
     }
     
-    // MARK: - Helpers
-    
-    /* Helper: Substitute the key for the value that is contained within the method name */
-    class func subtituteKeyInMethod(method: String, key: String, value: String) -> String? {
-        if method.rangeOfString("{\(key)}") != nil {
-            return method.stringByReplacingOccurrencesOfString("{\(key)}", withString: value)
-        } else {
-            return nil
-        }
-    }
-    
-    /* Helper: Given a response with error, see if a status_message is returned, otherwise return the previous error */
-    class func errorForData(data: NSData?, response: NSURLResponse?, error: NSError) -> NSError {
+    func getPublicUserData() {
         
-        if let parsedResult = NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments, error: nil) as? [String : AnyObject] {
+        let urlString = Constants.BaseURLSecure + "users/\(userKey)"
+        let url = NSURL(string: urlString)!
+        let request = NSMutableURLRequest(URL: url)
+
+        let task = session.dataTaskWithRequest(request) {data, response, downloadError in
             
-            if let errorMessage = parsedResult[UdacityClient.JSONResponseKeys.StatusMessage] as? String {
+            if let error = downloadError {
+                println("Could not complete the request \(error)")
+            } else {
                 
-                let userInfo = [NSLocalizedDescriptionKey : errorMessage]
+                let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5)) /* subset response data! */
+                var parsingError: NSError? = nil
+                let parsedResult = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments, error: &parsingError) as! NSDictionary
                 
-                return NSError(domain: "Udacity Error", code: 1, userInfo: userInfo)
+                if let user = parsedResult["user"] as? [String: AnyObject] {
+                    self.userFirstName = parsedResult["first_name"] as! String
+                    self.userLastName = parsedResult["last_name"] as! String
+                }
             }
         }
-        
-        return error
+        task.resume()
     }
+
+//    // MARK: - Helpers
+//    
+//    /* Helper: Substitute the key for the value that is contained within the method name */
+//    class func subtituteKeyInMethod(method: String, key: String, value: String) -> String? {
+//        if method.rangeOfString("{\(key)}") != nil {
+//            return method.stringByReplacingOccurrencesOfString("{\(key)}", withString: value)
+//        } else {
+//            return nil
+//        }
+//    }
     
-    /* Helper: Given raw JSON, return a usable Foundation object */
-    class func parseJSONWithCompletionHandler(data: NSData, completionHandler: (result: AnyObject!, error: NSError?) -> Void) {
-        
-        var parsingError: NSError? = nil
-        
-        let parsedResult: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parsingError)
-        
-        if let error = parsingError {
-            completionHandler(result: nil, error: error)
-        } else {
-            completionHandler(result: parsedResult, error: nil)
-        }
-    }
+//    /* Helper: Given a response with error, see if a status_message is returned, otherwise return the previous error */
+//    class func errorForData(data: NSData?, response: NSURLResponse?, error: NSError) -> NSError {
+//        
+//        if let parsedResult = NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments, error: nil) as? [String : AnyObject] {
+//            
+//            if let errorMessage = parsedResult[UdacityClient.JSONResponseKeys.StatusMessage] as? String {
+//                
+//                let userInfo = [NSLocalizedDescriptionKey : errorMessage]
+//                
+//                return NSError(domain: "Udacity Error", code: 1, userInfo: userInfo)
+//            }
+//        }
+//        
+//        return error
+//    }
+//    
+//    /* Helper: Given raw JSON, return a usable Foundation object */
+//    class func parseJSONWithCompletionHandler(data: NSData, completionHandler: (result: AnyObject!, error: NSError?) -> Void) {
+//        
+//        var parsingError: NSError? = nil
+//        
+//        let parsedResult: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parsingError)
+//        
+//        if let error = parsingError {
+//            completionHandler(result: nil, error: error)
+//        } else {
+//            completionHandler(result: parsedResult, error: nil)
+//        }
+//    }
     
     // MARK: - Shared Instance
     

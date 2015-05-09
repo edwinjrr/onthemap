@@ -27,6 +27,8 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
     var studentLatitude: Double!
     var studentLongitude: Double!
     
+    var annotations = [MKPointAnnotation]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -38,7 +40,38 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
 
     @IBAction func findOnTheMap(sender: AnyObject) {
         
-        //Setup the appearance of the second step
+        if mapStringTextField.text.isEmpty {
+            self.alertView("The address field is empty...")
+        }
+        else {
+            self.studentMapString = self.mapStringTextField.text
+            let regionRadius: CLLocationDistance = 2000
+            var geocoder = CLGeocoder()
+            geocoder.geocodeAddressString(studentMapString, completionHandler: {(placemarks: [AnyObject]!, error: NSError!) -> Void in
+                if let placemark = placemarks?[0] as? CLPlacemark {
+                    let coordinateRegion = MKCoordinateRegionMakeWithDistance(placemark.location.coordinate, regionRadius, regionRadius)
+                    self.locationMapView.setRegion(coordinateRegion, animated: true)
+                    self.locationMapView.addAnnotation(MKPlacemark(placemark: placemark))
+                    
+                    self.studentLatitude = placemark.location.coordinate.latitude as Double
+                    self.studentLongitude = placemark.location.coordinate.longitude as Double
+                    
+                    self.secondStepAppearanceSetup()
+                }
+                else {
+                    self.alertView("Sorry, your address is not valid...")
+                }
+            })
+        }
+    }
+    
+    func alertView(message: String) {
+        var alert = UIAlertController(title: "Oops!!", message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .Cancel, handler: nil))
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func secondStepAppearanceSetup() {
         self.view.backgroundColor = UIColor(red: 0.20, green: 0.45, blue: 0.64, alpha: 1.0)
         self.cancelButton.titleLabel?.textColor = UIColor.whiteColor()
         
@@ -50,49 +83,46 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
         self.mediaURLTextField.hidden = false
         self.locationMapView.hidden = false
         self.submitButton.hidden = false
-        
-        self.locationWithString()
-    }
-    
-    var annotations = [MKPointAnnotation]()
-    
-    func locationWithString() {
-        
-        studentMapString = mapStringTextField.text
-        let regionRadius: CLLocationDistance = 1000
-        
-        var geocoder = CLGeocoder()
-        geocoder.geocodeAddressString(studentMapString, completionHandler: {(placemarks: [AnyObject]!, error: NSError!) -> Void in
-            if let placemark = placemarks?[0] as? CLPlacemark {
-                let coordinateRegion = MKCoordinateRegionMakeWithDistance(placemark.location.coordinate, regionRadius * 2.0, regionRadius * 2.0)
-                self.locationMapView.setRegion(coordinateRegion, animated: true)
-                self.locationMapView.addAnnotation(MKPlacemark(placemark: placemark))
-                
-                self.studentLatitude = placemark.location.coordinate.latitude as Double
-                self.studentLongitude = placemark.location.coordinate.longitude as Double
-            }
-            else {
-                println("Error with the geocoding")
-            }
-        })
     }
     
     @IBAction func submitStudentLocation(sender: AnyObject) {
         
-        studentMediaURL = mediaURLTextField.text
-        
         if mediaURLTextField.text.isEmpty {
-            println("MediaURL Text Field is empty!")
+            self.alertView("The URL field is empty...")
         }
         else {
-            ParseClient.sharedInstance().postStudentLocation(studentMapString, mediaURL: studentMediaURL, latitude: studentLatitude, longitude: studentLongitude, completionHandler: { (success, error) -> Void in
-                if success {
-                    self.dismissViewControllerAnimated(true, completion: nil)
+            
+            studentMediaURL = mediaURLTextField.text
+          
+            if verifyURL(studentMediaURL) {
+                ParseClient.sharedInstance().postStudentLocation(studentMapString, mediaURL: studentMediaURL, latitude: studentLatitude, longitude: studentLongitude, completionHandler: { (success, error) -> Void in
+                    if success {
+                        self.dismissViewControllerAnimated(true, completion: nil)
+                    }
+                    else {
+                        self.alertView("Sorry, with couldn't submit your location...")
+                    }
+                })
+            }
+            else {
+                self.alertView("Sorry, your URL is not valid...")
+            }
+        }
+    }
+    
+    func verifyURL(urlString: String?) -> Bool {
+        if let urlString = urlString {
+            if let url = NSURL(string: urlString) {
+                if UIApplication.sharedApplication().canOpenURL(url) {
+                    return true
+                } else {
+                    return false
                 }
-                else {
-                    println("error")
-                }
-            })
+            } else {
+                return false
+            }
+        } else {
+            return false
         }
     }
     
