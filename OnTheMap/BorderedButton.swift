@@ -8,6 +8,8 @@
 
 import UIKit
 
+//UIButton class to configure round edges and font of the "Login", "Find On Map" and "Submit" Buttons.
+
 class BorderedButton: UIButton {
     
     /* Constants for styling and configuration */

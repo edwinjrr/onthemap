@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Edwin Rodriguez. All rights reserved.
 //
 
+//The bridging lets you import the facebook framework which was written with objective-C.
+
 #ifndef OnTheMap_Bridging_Header_h
 #define OnTheMap_Bridging_Header_h
 

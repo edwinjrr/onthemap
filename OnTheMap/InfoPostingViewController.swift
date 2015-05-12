@@ -26,6 +26,8 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
     var studentMediaURL: String!
     var studentLatitude: Double!
     var studentLongitude: Double!
+    
+    /* If the user decides to overwrite, the parameter will be set to "true", otherwise to "False", then the infoPostingViewController can choose to POST or update(PUT) the student location. */
     var studentLocationSubmitted: Bool!
     
     var annotations = [MKPointAnnotation]()
@@ -56,6 +58,7 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
                     self.locationMapView.setRegion(coordinateRegion, animated: true)
                     self.locationMapView.addAnnotation(MKPlacemark(placemark: placemark))
                     
+                    //Getting the coordinates
                     self.studentLatitude = placemark.location.coordinate.latitude as Double
                     self.studentLongitude = placemark.location.coordinate.longitude as Double
                     
@@ -88,9 +91,10 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
         self.submitButton.hidden = false
     }
     
+    // If the user is updating his location, the method will make a PUT request and if not, will make a POST request.
     @IBAction func submitStudentLocation(sender: AnyObject) {
         
-        self.loadingView(true)
+        self.loadingView(true) //Show the user that the app is working with his request, disabling the "submit" button.
         
         if mediaURLTextField.text.isEmpty {
             self.loadingView(false)
@@ -134,6 +138,7 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
         }
     }
     
+    //Show the user that the app is working with his request, disabling the "submit" button.
     func loadingView(state: Bool) {
         dispatch_async(dispatch_get_main_queue(), {
             if state {
@@ -166,6 +171,8 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
     @IBAction func cancelInfoPosting(sender: AnyObject) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
+    
+    //MARK: - UITextFieldDelegate methods
     
     func textFieldDidBeginEditing(textField: UITextField) {
         textField.placeholder = ""

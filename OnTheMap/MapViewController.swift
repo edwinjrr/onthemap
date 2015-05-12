@@ -43,7 +43,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 dispatch_async(dispatch_get_main_queue()) {
                     self.mapView.reloadInputViews()
                 }
-                self.studentsLocations()
+                self.studentsLocationsAnnotations()
             }
             else {
                 println(error)
@@ -51,12 +51,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    func studentsLocations() {
+    // Setting up the annotation properties to populate the annotations array.
+    func studentsLocationsAnnotations() {
         
         for dictionary in students {
             
-            // Notice that the float values are being used to create CLLocationDegree values.
-            // This is a version of the Double type.
             let lat = CLLocationDegrees(dictionary.latitude)
             let long = CLLocationDegrees(dictionary.longitude)
             
@@ -67,13 +66,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             let last = dictionary.lastName
             let mediaURL = dictionary.mediaURL
             
-            // Here we create the annotation and set its coordiate, title, and subtitle properties
+            // Here we create the annotation and set its coordinate, title, and subtitle properties
             var annotation = MKPointAnnotation()
             annotation.coordinate = coordinate
             annotation.title = "\(first) \(last)"
             annotation.subtitle = mediaURL
             
-            // Finally we place the annotation in an array of annotations.
+            // Placing the annotation in an array of annotations.
             annotations.append(annotation)
         }
         
@@ -83,9 +82,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // MARK: - MKMapViewDelegate
     
-    // Here we create a view with a "right callout accessory view". You might choose to look into other
-    // decoration alternatives. Notice the similarity between this method and the cellForRowAtIndexPath
-    // method in TableViewDataSource.
+    // Creating a view with a "right callout accessory view". 
     func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
         
         let reuseId = "pin"
@@ -116,12 +113,19 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
-    func logout() {
-        let loginManager = FBSDKLoginManager()
-        loginManager.logOut() // this is an instance function
-        self.dismissViewControllerAnimated(true, completion: nil)
+    //When the addLocationButton (Pin) gets pressed this method checks if the student already posted his location and acts accordingly.
+    func checkForStudentLocation() {
+        Client.sharedInstance().queryingStudentLocation({(success, error) -> Void in
+            if success {
+                self.overwriteAlertView()
+            }
+            else {
+                self.showInfoPostingView(false)
+            }
+        })
     }
     
+    //If the student already posted a location, a alertview will ask if him wants to overwrite the location with a new one.
     func overwriteAlertView() {
         var alert = UIAlertController(title: nil, message: "You have already posted a location!", preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
@@ -132,20 +136,16 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
+    /* If the user decides to overwrite, the parameter will be set to "true", otherwise to "False", then the infoPostingViewController can choose to POST or update(PUT) the student location. */
     func showInfoPostingView(studentSubmitted: Bool) {
         let controller = self.storyboard!.instantiateViewControllerWithIdentifier("InfoPostingViewController") as! InfoPostingViewController
         controller.studentLocationSubmitted = studentSubmitted
         self.navigationController!.presentViewController(controller, animated: true, completion: nil)
     }
     
-    func checkForStudentLocation() {
-        Client.sharedInstance().queryingStudentLocation({(success, error) -> Void in
-            if success {
-                self.overwriteAlertView()
-            }
-            else {
-                self.showInfoPostingView(false)
-            }
-        })
+    func logout() {
+        let loginManager = FBSDKLoginManager()
+        loginManager.logOut() // this is an instance function
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
 }

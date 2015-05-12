@@ -19,7 +19,6 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     var session: NSURLSession!
     var facebookAccessToken: String!
-    
     var backgroundGradient: CAGradientLayer? = nil
     var tapRecognizer: UITapGestureRecognizer? = nil
     
@@ -38,37 +37,20 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         
        /* Check for existing Facebook Access Tokens */
        if (FBSDKAccessToken.currentAccessToken() != nil) {
-           // User is already logged in, do work such as go to next view controller.
-        
             self.loadingView(true)
             self.facebookAccessToken = FBSDKAccessToken.currentAccessToken().tokenString as String
-            //println("The access token is: \(self.facebookAccessToken)")
-            //println("Already logged in")
-            //self.performSegueWithIdentifier("TabBarSegue", sender: self)
             self.loginWithFacebook(facebookAccessToken)
-           //Get the access token string and assign it to the facebookAccessToken variable.
-           //self.facebookAccessToken = FBSDKAccessToken.currentAccessToken().tokenString as String
-           //self.postSessionWithFacebookAuthentication()
         }
     }
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        
         self.addKeyboardDismissRecognizer()
-        //self.subscribeToKeyboardNotifications()
     }
-    
-    override func viewDidAppear(animated: Bool) {
-        //self.debugTextLabel.text = ""
-    }
-    
-    
+
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        
         self.removeKeyboardDismissRecognizer()
-        //self.unsubscribeToKeyboardNotifications()
     }
     
     // MARK: - Keyboard Fixes
@@ -89,8 +71,8 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     @IBAction func loginButtonTouch(sender: AnyObject) {
         
-        self.loadingView(true)
-        self.view.endEditing(true)
+        self.loadingView(true) //Show the user that the app is working with the request made.
+        self.view.endEditing(true) //Hide the keyboard when the user press login.
         
         if usernameTextField.text.isEmpty {
             self.loadingView(false)
@@ -99,7 +81,7 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
             self.loadingView(false)
             debugTextLabel.text = "Password field is empty!"
         } else {
-            Client.sharedInstance().postSession(self.usernameTextField.text, password: self.passwordTextField.text) { (success, error) in
+            Client.sharedInstance().postSessionWithUdacityCredentials(self.usernameTextField.text, password: self.passwordTextField.text) { (success, error) in
                 if success {
                     self.loadingView(false)
                     self.completeLogin()
@@ -112,6 +94,7 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         }
     }
     
+    //Take the FacebookAccessToken, get the udacity's public user data and complete the login.
     func loginWithFacebook(accessToken: String) {
         Client.sharedInstance().postSessionWithFacebookAuthentication(accessToken) { (success, error) in
             if success {
@@ -124,6 +107,7 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         }
     }
     
+    //Show the user that the app is working with his request, disabling the login button and showing "Loading..." in the debugTextLabel.
     func loadingView(state: Bool) {
         dispatch_async(dispatch_get_main_queue(), {
             if state {
@@ -139,6 +123,7 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         })
     }
     
+    //When the authentication/Authorization is completed, the user gets access to the TabBarViewController.
     func completeLogin() {
         dispatch_async(dispatch_get_main_queue(), {
             self.debugTextLabel.text = ""
@@ -149,11 +134,13 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         })
     }
     
+    //Link to the sign-up page of Udacity.
     @IBAction func signUp(sender: AnyObject) {
         let app = UIApplication.sharedApplication()
         app.openURL(NSURL(string: "https://www.udacity.com/account/auth#!/signup")!)
     }
     
+    //Shows an error message in the debugTextLabel.
     func displayError(errorString: String?) {
         dispatch_async(dispatch_get_main_queue(), {
             if let errorString = errorString {
@@ -162,6 +149,7 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         })
     }
     
+    //Getting the final look of the view.
     func configureUI() {
         
         /* Configure background gradient */
@@ -198,57 +186,18 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         
     }
     
-    //Testing the Facebook Login:
-
-//    func postSessionWithFacebookAuthentication() {
-//        
-//        let request = NSMutableURLRequest(URL: NSURL(string: "https://www.udacity.com/api/session")!)
-//        request.HTTPMethod = "POST"
-//        request.addValue("application/json", forHTTPHeaderField: "Accept")
-//        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-//        request.HTTPBody = "{\"facebook_mobile\": {\"access_token\": \"\(facebookAccessToken)\"}}".dataUsingEncoding(NSUTF8StringEncoding)
-//        
-//        let session = NSURLSession.sharedSession()
-//        let task = session.dataTaskWithRequest(request) { data, response, error in
-//            if error != nil {
-//                println("Could not complete the request \(error)")
-//            }
-//            else {
-//                let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5)) /* subset response data! */
-//                println(NSString(data: newData, encoding: NSUTF8StringEncoding))
-//            }
-//        }
-//        task.resume()
-//    }
-    
-    // Facebook Delegate Methods
+    //MARK: - FBSDKLoginButtonDelegate Methods
     
     func loginButton(loginButton: FBSDKLoginButton!, didCompleteWithResult result: FBSDKLoginManagerLoginResult!, error: NSError!) {
-        
-        
-        //self.performSegueWithIdentifier("TabBarSegue", sender: self)
-        
-        //Get the access token string and assign it to the facebookAccessToken variable.
-        //self.facebookAccessToken = FBSDKAccessToken.currentAccessToken().tokenString as String
-        //println("The access token is: \(self.facebookAccessToken)")
-        //self.loginWithFacebook()
 
         if ((error) != nil)
         {
-            println(error)
+            //Nothing to do here.
         }
         else if result.isCancelled {
-            // Handle cancellations
+            // Nothing to do here.
         }
         else {
-//            // If you ask for multiple permissions at once, you
-//            // should check if specific permissions missing
-//            if result.grantedPermissions.contains("email")
-//            {
-//                // Do work
-//            }
-            //self.performSegueWithIdentifier("TabBarSegue", sender: self)
-            //println("User Logged In")
             self.loadingView(true)
             self.facebookAccessToken = FBSDKAccessToken.currentAccessToken().tokenString as String
             self.loginWithFacebook(facebookAccessToken)
@@ -256,7 +205,7 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     }
     
     func loginButtonDidLogOut(loginButton: FBSDKLoginButton!) {
-        //println("User Logged Out")
+        // Nothing to do here.
     }
     
 }

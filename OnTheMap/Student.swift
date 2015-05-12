@@ -7,7 +7,8 @@
 //
 
 import UIKit
-//import MapKit
+
+//StudenLocation object struct used to populate the MapView and the TableView.
 
 struct Student {
     

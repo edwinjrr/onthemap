@@ -51,7 +51,8 @@ class ListViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-
+        
+        //Setting up the TableViewCell
         let cellReuseIdentifier = "StudentTableViewCell"
         let student = students[indexPath.row]
         var cell = tableView.dequeueReusableCellWithIdentifier(cellReuseIdentifier) as! UITableViewCell
@@ -64,18 +65,24 @@ class ListViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        
         let student = students[indexPath.row]
         let app = UIApplication.sharedApplication()
         app.openURL(NSURL(string: student.mediaURL)!)
     }
 
-    func logout() {
-        let loginManager = FBSDKLoginManager()
-        loginManager.logOut() // this is an instance function
-        self.dismissViewControllerAnimated(true, completion: nil)
+    //When the addLocationButton (Pin) gets pressed this method checks if the student already posted his location and acts accordingly.
+    func checkForStudentLocation() {
+        Client.sharedInstance().queryingStudentLocation({(success, error) -> Void in
+            if success {
+                self.overwriteAlertView()
+            }
+            else {
+                self.showInfoPostingView(false)
+            }
+        })
     }
     
+    //If the student already posted a location, a alertview will ask if him wants to overwrite the location with a new one.
     func overwriteAlertView() {
         var alert = UIAlertController(title: nil, message: "You have already posted a location!", preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
@@ -86,20 +93,16 @@ class ListViewController: UITableViewController {
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
+    /* If the user decides to overwrite, the parameter will be set to "true", otherwise to "False", then the infoPostingViewController can choose to POST or update(PUT) the student location. */
     func showInfoPostingView(studentSubmitted: Bool) {
         let controller = self.storyboard!.instantiateViewControllerWithIdentifier("InfoPostingViewController") as! InfoPostingViewController
         controller.studentLocationSubmitted = studentSubmitted
         self.navigationController!.presentViewController(controller, animated: true, completion: nil)
     }
     
-    func checkForStudentLocation() {
-        Client.sharedInstance().queryingStudentLocation({(success, error) -> Void in
-            if success {
-                self.overwriteAlertView()
-            }
-            else {
-                self.showInfoPostingView(false)
-            }
-        })
+    func logout() {
+        let loginManager = FBSDKLoginManager()
+        loginManager.logOut() // this is an instance function
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
 }
