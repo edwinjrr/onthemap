@@ -15,8 +15,10 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var loginButton: BorderedButton!
     @IBOutlet weak var debugTextLabel: UILabel!
+    @IBOutlet weak var facebookLoginButton: FBSDKLoginButton!
     
     var session: NSURLSession!
+    var facebookAccessToken: String!
     
     var backgroundGradient: CAGradientLayer? = nil
     var tapRecognizer: UITapGestureRecognizer? = nil
@@ -35,8 +37,18 @@ class LoginViewController: UIViewController {
         
         /* Configure the UI */
         self.configureUI()
+        
+//        /* Check for existing Facebook Access Tokens */
+//        if (FBSDKAccessToken.currentAccessToken() != nil)
+//        {
+//            // User is already logged in, do work such as go to next view controller.
+//            self.completeLogin()
+//            //Get the access token string and assign it to the facebookAccessToken variable.
+//            //self.facebookAccessToken = FBSDKAccessToken.currentAccessToken().tokenString as String
+//            //self.postSessionWithFacebookAuthentication()
+//        }
     }
-    
+
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -45,9 +57,19 @@ class LoginViewController: UIViewController {
     }
     
     override func viewDidAppear(animated: Bool) {
-        super.viewWillAppear(animated)
         self.debugTextLabel.text = ""
+        
+        /* Check for existing Facebook Access Tokens */
+//        if (FBSDKAccessToken.currentAccessToken() != nil)
+//        {
+//            // User is already logged in, do work such as go to next view controller.
+//            self.completeLogin()
+//            //Get the access token string and assign it to the facebookAccessToken variable.
+//            //self.facebookAccessToken = FBSDKAccessToken.currentAccessToken().tokenString as String
+//            //self.postSessionWithFacebookAuthentication()
+//        }
     }
+    
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
@@ -70,23 +92,45 @@ class LoginViewController: UIViewController {
         self.view.endEditing(true)
     }
     
-    // MARK: - Login
+    // MARK: - Login with Udacity's credentials.
     
     @IBAction func loginButtonTouch(sender: AnyObject) {
+        
+        self.loadingView(true)
+        
         if usernameTextField.text.isEmpty {
+            self.loadingView(false)
             debugTextLabel.text = "Username field is empty!"
         } else if passwordTextField.text.isEmpty {
+            self.loadingView(false)
             debugTextLabel.text = "Password field is empty!"
         } else {
             Client.sharedInstance().postSession(self.usernameTextField.text, password: self.passwordTextField.text) { (success, error) in
                 if success {
+                    self.loadingView(false)
                     self.completeLogin()
                 }
                 else {
+                    self.loadingView(false)
                     self.displayError(error)
                 }
             }
         }
+    }
+    
+    func loadingView(state: Bool) {
+        dispatch_async(dispatch_get_main_queue(), {
+            if state {
+                self.loginButton.enabled = false
+                self.loginButton.alpha = 0.50
+                self.debugTextLabel.text = "Loading..."
+            }
+            else {
+                self.loginButton.enabled = true
+                self.loginButton.alpha = 1.0
+                self.debugTextLabel.text = ""
+            }
+        })
     }
     
     func completeLogin() {
@@ -146,11 +190,68 @@ class LoginViewController: UIViewController {
         
     }
     
+    //Testing the Facebook Login:
+
+    func postSessionWithFacebookAuthentication() {
+        
+        let request = NSMutableURLRequest(URL: NSURL(string: "https://www.udacity.com/api/session")!)
+        request.HTTPMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.HTTPBody = "{\"facebook_mobile\": {\"access_token\": \"\(facebookAccessToken)\"}}".dataUsingEncoding(NSUTF8StringEncoding)
+        
+        let session = NSURLSession.sharedSession()
+        let task = session.dataTaskWithRequest(request) { data, response, error in
+            if error != nil {
+                println("Could not complete the request \(error)")
+            }
+            else {
+                let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5)) /* subset response data! */
+                println(NSString(data: newData, encoding: NSUTF8StringEncoding))
+            }
+        }
+        task.resume()
+    }
+    
+    // Facebook Delegate Methods
+    
+//    func loginButton(loginButton: FBSDKLoginButton!, didCompleteWithResult result: FBSDKLoginManagerLoginResult!, error: NSError!) {
+//        
+//        println("User Logged In")
+//        self.completeLogin()
+//        
+//        //Get the access token string and assign it to the facebookAccessToken variable.
+//        //self.facebookAccessToken = FBSDKAccessToken.currentAccessToken().tokenString as String
+//        //self.postSessionWithFacebookAuthentication()
+//
+//        if ((error) != nil)
+//        {
+//            // Process error
+//        }
+//        else if result.isCancelled {
+//            // Handle cancellations
+//        }
+//        else {
+////            // If you ask for multiple permissions at once, you
+////            // should check if specific permissions missing
+////            if result.grantedPermissions.contains("email")
+////            {
+////                // Do work
+////            }
+//            self.completeLogin()
+//        }
+//    }
+//    
+//    func loginButtonDidLogOut(loginButton: FBSDKLoginButton!) {
+//        println("User Logged Out")
+//    }
+//    
 }
 
-// MARK: - Helper
+ //MARK: - Helper
 
-/* This code has been added in response to student comments */
+ //This is for???!!
+
 extension LoginViewController {
     
     func subscribeToKeyboardNotifications() {

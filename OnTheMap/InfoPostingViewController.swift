@@ -26,6 +26,7 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
     var studentMediaURL: String!
     var studentLatitude: Double!
     var studentLongitude: Double!
+    var studentLocationSubmitted: Bool!
     
     var annotations = [MKPointAnnotation]()
     
@@ -89,7 +90,10 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
     
     @IBAction func submitStudentLocation(sender: AnyObject) {
         
+        self.loadingView(true)
+        
         if mediaURLTextField.text.isEmpty {
+            self.loadingView(false)
             self.alertView("The URL field is empty...")
         }
         else {
@@ -97,19 +101,50 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
             studentMediaURL = mediaURLTextField.text
           
             if verifyURL(studentMediaURL) {
-                Client.sharedInstance().postStudentLocation(studentMapString, mediaURL: studentMediaURL, latitude: studentLatitude, longitude: studentLongitude, completionHandler: { (success, error) -> Void in
-                    if success {
-                        self.dismissViewControllerAnimated(true, completion: nil)
-                    }
-                    else {
-                        self.alertView("Sorry, with couldn't submit your location...")
-                    }
-                })
+                if self.studentLocationSubmitted == true {
+                    Client.sharedInstance().updateStudentLocation(studentMapString, mediaURL: studentMediaURL, latitude: studentLatitude, longitude: studentLongitude, completionHandler: { (success, error) -> Void in
+                        if success {
+                            self.loadingView(false)
+                            self.dismissViewControllerAnimated(true, completion: nil)
+                        }
+                        else {
+                            self.loadingView(false)
+                            self.alertView("Sorry, with couldn't update your location...")
+                        }
+                    })
+                }
+                else {
+                    Client.sharedInstance().postStudentLocation(studentMapString, mediaURL: studentMediaURL, latitude: studentLatitude, longitude: studentLongitude, completionHandler: { (success, error) -> Void in
+                        if success {
+                            self.loadingView(false)
+                            self.dismissViewControllerAnimated(true, completion: nil)
+                        }
+                        else {
+                            self.loadingView(false)
+                            self.alertView("Sorry, with couldn't submit your location...")
+                        }
+                    })
+                }
+                
             }
             else {
+                self.loadingView(false)
                 self.alertView("Sorry, your URL is not valid...")
             }
         }
+    }
+    
+    func loadingView(state: Bool) {
+        dispatch_async(dispatch_get_main_queue(), {
+            if state {
+                self.submitButton.enabled = false
+                self.submitButton.alpha = 0.5
+            }
+            else {
+                self.submitButton.enabled = true
+                self.submitButton.alpha = 1.0
+            }
+        })
     }
     
     func verifyURL(urlString: String?) -> Bool {

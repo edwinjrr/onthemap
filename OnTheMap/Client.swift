@@ -14,13 +14,17 @@ class Client : NSObject {
     var session: NSURLSession
     
     var userKey: String!
+    var objectID: String!
     var userFirstName: String!
     var userLastName: String!
+    var facebookAccessToken: String!
     
     override init() {
         session = NSURLSession.sharedSession()
         super.init()
     }
+    
+    //MARK: Udacity API.
     
     func postSession(username: String, password: String, completionHandler: (success: Bool, error: String?) -> Void) {
         
@@ -83,6 +87,28 @@ class Client : NSObject {
         }
         task.resume()
     }
+    
+    func postSessionWithFacebookAuthentication() {
+        
+        let request = NSMutableURLRequest(URL: NSURL(string: "https://www.udacity.com/api/session")!)
+        request.HTTPMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.HTTPBody = "{\"facebook_mobile\": {\"access_token\": \"\(facebookAccessToken)\"}}".dataUsingEncoding(NSUTF8StringEncoding)
+        
+        let task = session.dataTaskWithRequest(request) { data, response, error in
+            if error != nil {
+                println("Could not complete the request \(error)")
+            }
+            else {
+                let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5)) /* subset response data! */
+                println(NSString(data: newData, encoding: NSUTF8StringEncoding))
+            }
+        }
+        task.resume()
+    }
+    
+    //MARK: Parse API.
     
     func getStudentsLocations(completionHandler: (result: [Student]?, error: String?) -> Void) {
         
@@ -158,6 +184,66 @@ class Client : NSObject {
         }
         
         /* Start the request */
+        task.resume()
+    }
+    
+    func queryingStudentLocation(completionHandler: (success: Bool, error: String?) -> Void) {
+  
+        let request = NSMutableURLRequest(URL: NSURL(string: "https://api.parse.com/1/classes/StudentLocation?where=%7B%22uniqueKey%22%3A%22\(userKey)%22%7D")!)
+        request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
+        request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
+        
+        let task = session.dataTaskWithRequest(request) { data, response, error in
+            
+            if let error = error {
+                println("Could not complete the request \(error)")
+            } else {
+                
+                var parsingError: NSError? = nil
+                let parsedResult = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parsingError) as! NSDictionary
+                
+                /* 6. Use the data! */
+                if let results = parsedResult["results"] as? [[String : AnyObject]] {
+                    self.objectID = results[0]["objectId"] as! String
+                    completionHandler(success: true, error: nil)
+                }
+                else {
+                    completionHandler(success: false, error: "Could not find student location.")
+                }
+                
+            }
+        }
+        task.resume()
+    }
+    
+    func updateStudentLocation(mapString: String, mediaURL: String, latitude: Double, longitude: Double, completionHandler: (success: Bool, error: String?) -> Void) {
+        
+        let request = NSMutableURLRequest(URL: NSURL(string: "https://api.parse.com/1/classes/StudentLocation/\(objectID)")!)
+        request.HTTPMethod = "PUT"
+        request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
+        request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.HTTPBody = "{\"uniqueKey\": \"\(userKey)\", \"firstName\": \"\(userFirstName)\", \"lastName\": \"\(userLastName)\",\"mapString\": \"\(mapString)\", \"mediaURL\": \"\(mediaURL)\",\"latitude\": \(latitude), \"longitude\": \(longitude)}".dataUsingEncoding(NSUTF8StringEncoding)
+        
+        let task = session.dataTaskWithRequest(request) { data, response, error in
+            
+            if let error = error {
+                println("Could not complete the request \(error)")
+            } else {
+                
+                /* Parse the data */
+                var parsingError: NSError? = nil
+                let parsedResult = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parsingError) as! NSDictionary
+                
+                /* Use the data */
+                if let result = parsedResult["updatedAt"] as? String {
+                    completionHandler(success: true, error: nil)
+                } else {
+                    completionHandler(success: false, error: "Could not update student location.")
+                }
+            }
+        }
+
         task.resume()
     }
     

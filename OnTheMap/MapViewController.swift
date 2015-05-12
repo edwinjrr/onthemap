@@ -23,7 +23,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         super.viewDidLoad()
         
         //Adding the bar button items of the navigation bar.
-        let addLocationButton = UIBarButtonItem(image: UIImage(named: "pin"), style: UIBarButtonItemStyle.Plain, target: self, action: "showInfoPostingView")
+        let addLocationButton = UIBarButtonItem(image: UIImage(named: "pin"), style: UIBarButtonItemStyle.Plain, target: self, action: "checkForStudentLocation")
         let refreshButton = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: "getStudentsList")
         let logoutButton = UIBarButtonItem(title: "Logout", style: .Plain, target: self, action: "logout")
         
@@ -37,7 +37,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     func getStudentsList() {
-        Client.sharedInstance().getStudentsLocations() { (results, error) in
+            Client.sharedInstance().getStudentsLocations() { (results, error) in
             if let results = results {
                 self.students = results
                 dispatch_async(dispatch_get_main_queue()) {
@@ -117,12 +117,35 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     func logout() {
+        let loginManager = FBSDKLoginManager()
+        loginManager.logOut() // this is an instance function
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
-    func showInfoPostingView() {
+    func overwriteAlertView() {
+        var alert = UIAlertController(title: nil, message: "You have already posted a location!", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Overwrite", style: .Default, handler: {action in
+            self.showInfoPostingView(true)
+        }))
+        
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func showInfoPostingView(studentSubmitted: Bool) {
         let controller = self.storyboard!.instantiateViewControllerWithIdentifier("InfoPostingViewController") as! InfoPostingViewController
+        controller.studentLocationSubmitted = studentSubmitted
         self.navigationController!.presentViewController(controller, animated: true, completion: nil)
     }
     
+    func checkForStudentLocation() {
+        Client.sharedInstance().queryingStudentLocation({(success, error) -> Void in
+            if success {
+                self.overwriteAlertView()
+            }
+            else {
+                self.showInfoPostingView(false)
+            }
+        })
+    }
 }
