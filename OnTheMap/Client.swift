@@ -48,14 +48,15 @@ class Client : NSObject {
                 let parsedResult = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments, error: &parsingError) as! NSDictionary
                 
                 /* Use the data */
-                if let status_code = parsedResult["status"] as? Int {
+//                if let status_code = parsedResult["status"] as? Int {
+//                    completionHandler(success: false, error: "Invalid Login Credentials")
+//                } else {
+                if let userAccount = parsedResult["account"] as? [String : AnyObject] {
+                    self.userKey = userAccount["key"] as! String
+                    self.getPublicUserData()
+                    completionHandler(success: true, error: nil) }
+                else {
                     completionHandler(success: false, error: "Invalid Login Credentials")
-                } else {
-                    if let userAccount = parsedResult["account"] as? [String : AnyObject] {
-                        self.userKey = userAccount["key"] as! String
-                        self.getPublicUserData()
-                        completionHandler(success: true, error: nil)
-                    }
                 }
             }
         }
@@ -88,7 +89,7 @@ class Client : NSObject {
         task.resume()
     }
     
-    func postSessionWithFacebookAuthentication() {
+    func postSessionWithFacebookAuthentication(facebookAccessToken: String, completionHandler: (success: Bool, error: String?) -> Void) {
         
         let request = NSMutableURLRequest(URL: NSURL(string: "https://www.udacity.com/api/session")!)
         request.HTTPMethod = "POST"
@@ -97,12 +98,23 @@ class Client : NSObject {
         request.HTTPBody = "{\"facebook_mobile\": {\"access_token\": \"\(facebookAccessToken)\"}}".dataUsingEncoding(NSUTF8StringEncoding)
         
         let task = session.dataTaskWithRequest(request) { data, response, error in
-            if error != nil {
+            if let error = error {
                 println("Could not complete the request \(error)")
-            }
-            else {
+            } else {
+                
+                /* Parse the data */
                 let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5)) /* subset response data! */
-                println(NSString(data: newData, encoding: NSUTF8StringEncoding))
+                var parsingError: NSError? = nil
+                let parsedResult = NSJSONSerialization.JSONObjectWithData(newData, options: NSJSONReadingOptions.AllowFragments, error: &parsingError) as! NSDictionary
+                
+                /* Use the data */
+                if let userAccount = parsedResult["account"] as? [String: AnyObject] {
+                    self.userKey = userAccount["key"] as! String
+                    self.getPublicUserData()
+                    completionHandler(success: true, error: nil)
+                } else {
+                    completionHandler(success: false, error: "Could not submit student location.")
+                }
             }
         }
         task.resume()
