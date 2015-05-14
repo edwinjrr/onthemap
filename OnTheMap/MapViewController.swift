@@ -44,9 +44,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 if let results = results {
                     self.students = results
                     dispatch_async(dispatch_get_main_queue()) {
+                        self.studentsLocationsAnnotations()
                         self.mapView.reloadInputViews()
                     }
-                    self.studentsLocationsAnnotations()
                 }
                 else {
                     self.getStudentsListAlertView()
@@ -71,6 +71,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // Setting up the annotation properties to populate the annotations array.
     func studentsLocationsAnnotations() {
+        
+        //Remove old pins before adding new ones to avoid duplication.
+        annotations = [MKPointAnnotation]()
         
         for dictionary in students {
             

@@ -44,4 +44,8 @@ struct StudentInformation {
         return students
     }
     
+    var fullname: String {
+        return firstName + " " + lastName
+    }
+    
 }

@@ -164,15 +164,10 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
             if let url = NSURL(string: urlString) {
                 if UIApplication.sharedApplication().canOpenURL(url) {
                     return true
-                } else {
-                    return false
                 }
-            } else {
-                return false
             }
-        } else {
-            return false
         }
+        return false
     }
     
     @IBAction func cancelInfoPosting(sender: AnyObject) {

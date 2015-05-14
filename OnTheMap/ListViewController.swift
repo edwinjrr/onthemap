@@ -75,7 +75,8 @@ class ListViewController: UITableViewController {
         let student = students[indexPath.row]
         var cell = tableView.dequeueReusableCellWithIdentifier(cellReuseIdentifier) as! UITableViewCell
         
-        cell.textLabel!.text = "\(student.firstName)" + " " + "\(student.lastName)"
+        //cell.textLabel!.text = "\(student.firstName)" + " " + "\(student.lastName)"
+        cell.textLabel!.text = student.fullname
         cell.detailTextLabel!.text = student.mediaURL
         cell.imageView!.image = UIImage(named: "pin")
         

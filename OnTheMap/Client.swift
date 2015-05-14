@@ -40,7 +40,7 @@ class Client : NSObject {
         let task = session.dataTaskWithRequest(request) { data, response, downloadError in
             
             if let error = downloadError {
-                println("Could not complete the request \(error)")
+                completionHandler(success: false, error: "Invalid Login Credentials")
             } else {
             
                 /* Parsing the data */
@@ -104,7 +104,7 @@ class Client : NSObject {
         /* Making the request */
         let task = session.dataTaskWithRequest(request) { data, response, error in
             if let error = error {
-                println("Could not complete the request \(error)")
+                completionHandler(success: false, error: "Could not submit student location.")
             } else {
                 
                 /* Parsing the data */
@@ -144,7 +144,7 @@ class Client : NSObject {
         let task = session.dataTaskWithRequest(request) {data, response, downloadError in
             
             if let error = downloadError {
-                println("Could not complete the request \(error)")
+                completionHandler(result: nil, error: "Could not find students")
             } else {
                 
                 /* Parsing the data */
@@ -162,7 +162,7 @@ class Client : NSObject {
                         completionHandler(result: students, error: nil)
                         
                     } else {
-                        println("Could not find results in \(parsedResult)")
+                        completionHandler(result: nil, error: "Could not find students")
                     }
                 }
             }
@@ -185,7 +185,7 @@ class Client : NSObject {
         let task = session.dataTaskWithRequest(request) { data, response, downloadError in
             
             if let error = downloadError {
-                println("Could not complete the request \(error)")
+                completionHandler(success: false, error: "Could not submit student location.")
             } else {
                 
                 /* Parsing the data */
@@ -215,7 +215,7 @@ class Client : NSObject {
         let task = session.dataTaskWithRequest(request) { data, response, error in
             
             if let error = error {
-                println("Could not complete the request \(error)")
+                completionHandler(success: false, error: "Could not find student location.")
             } else {
                 
                 /* Parsing the data */
@@ -251,7 +251,7 @@ class Client : NSObject {
         let task = session.dataTaskWithRequest(request) { data, response, error in
             
             if let error = error {
-                println("Could not complete the request \(error)")
+                completionHandler(success: false, error: "Could not update student location.")
             } else {
                 
                 /* Parsing the data */
