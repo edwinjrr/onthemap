@@ -15,7 +15,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     var session: NSURLSession!
     
-    var students: [Student] = [Student]()
+    var students: [StudentInformation] = [StudentInformation]()
     
     var annotations = [MKPointAnnotation]()
     
@@ -37,18 +37,36 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     func getStudentsList() {
+        
+        //Checking for internet connection first.
+        if Reachability.isConnectedToNetwork() == true {
             Client.sharedInstance().getStudentsLocations() { (results, error) in
-            if let results = results {
-                self.students = results
-                dispatch_async(dispatch_get_main_queue()) {
-                    self.mapView.reloadInputViews()
+                if let results = results {
+                    self.students = results
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.mapView.reloadInputViews()
+                    }
+                    self.studentsLocationsAnnotations()
                 }
-                self.studentsLocationsAnnotations()
+                else {
+                    self.getStudentsListAlertView()
+                }
             }
-            else {
-                println(error)
-            }
+        } else {
+            var alert = UIAlertView(title: "No Internet Connection", message: "Make sure your device is connected to the internet.", delegate: nil, cancelButtonTitle: "OK")
+            alert.show()
         }
+    }
+    
+    //If an error occurs downloading the students locations, the user can retry or cancel the request.
+    func getStudentsListAlertView() {
+        var alert = UIAlertController(title: nil, message: "Something happen trying to download the students locations.", preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Retry", style: .Default, handler: {action in
+            self.getStudentsList()
+        }))
+        
+        self.presentViewController(alert, animated: true, completion: nil)
     }
     
     // Setting up the annotation properties to populate the annotations array.
@@ -115,14 +133,21 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     //When the addLocationButton (Pin) gets pressed this method checks if the student already posted his location and acts accordingly.
     func checkForStudentLocation() {
-        Client.sharedInstance().queryingStudentLocation({(success, error) -> Void in
-            if success {
-                self.overwriteAlertView()
-            }
-            else {
-                self.showInfoPostingView(false)
-            }
-        })
+        
+        //Checking for internet connection first.
+        if Reachability.isConnectedToNetwork() == true {
+            Client.sharedInstance().queryingStudentLocation({(success, error) -> Void in
+                if success {
+                    self.overwriteAlertView()
+                }
+                else {
+                    self.showInfoPostingView(false)
+                }
+            })
+        } else {
+            var alert = UIAlertView(title: "No Internet Connection", message: "Make sure your device is connected to the internet.", delegate: nil, cancelButtonTitle: "OK")
+            alert.show()
+        }
     }
     
     //If the student already posted a location, a alertview will ask if him wants to overwrite the location with a new one.

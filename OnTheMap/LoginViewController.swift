@@ -71,26 +71,35 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     @IBAction func loginButtonTouch(sender: AnyObject) {
         
-        self.loadingView(true) //Show the user that the app is working with the request made.
         self.view.endEditing(true) //Hide the keyboard when the user press login.
         
-        if usernameTextField.text.isEmpty {
-            self.loadingView(false)
-            debugTextLabel.text = "Username field is empty!"
-        } else if passwordTextField.text.isEmpty {
-            self.loadingView(false)
-            debugTextLabel.text = "Password field is empty!"
-        } else {
-            Client.sharedInstance().postSessionWithUdacityCredentials(self.usernameTextField.text, password: self.passwordTextField.text) { (success, error) in
-                if success {
-                    self.loadingView(false)
-                    self.completeLogin()
-                }
-                else {
-                    self.loadingView(false)
-                    self.displayError(error)
+        //Checking for internet connection first.
+        if Reachability.isConnectedToNetwork() == true {
+            
+            if usernameTextField.text.isEmpty {
+                //self.loadingView(false)
+                debugTextLabel.text = "Username field is empty!"
+            } else if passwordTextField.text.isEmpty {
+                //self.loadingView(false)
+                debugTextLabel.text = "Password field is empty!"
+            } else {
+                self.loadingView(true) //Show the user that the app is working with the request made.
+                Client.sharedInstance().postSessionWithUdacityCredentials(self.usernameTextField.text, password: self.passwordTextField.text) { (success, error) in
+                    if success {
+                        self.loadingView(false)
+                        self.completeLogin()
+                    }
+                    else {
+                        self.loadingView(false)
+                        self.displayError(error)
+                    }
                 }
             }
+            
+        } else {
+            self.loadingView(false)
+            var alert = UIAlertView(title: "No Internet Connection", message: "Make sure your device is connected to the internet.", delegate: nil, cancelButtonTitle: "OK")
+            alert.show()
         }
     }
     

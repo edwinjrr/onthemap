@@ -128,11 +128,11 @@ class Client : NSObject {
     
     //MARK: Parse API.
     
-    func getStudentsLocations(completionHandler: (result: [Student]?, error: String?) -> Void) {
+    func getStudentsLocations(completionHandler: (result: [StudentInformation]?, error: String?) -> Void) {
         
         /* Setting the parameters */
         let methodParameters = [
-            "limit": 50
+            "limit": 100
         ]
         
         /* Configuring the request */
@@ -157,7 +157,7 @@ class Client : NSObject {
                 } else {
                     if let results = parsedResult["results"] as? [[String : AnyObject]] {
                         
-                        var students = Student.studentsFromResults(results)
+                        var students = StudentInformation.studentsFromResults(results)
                         
                         completionHandler(result: students, error: nil)
                         

@@ -1,5 +1,5 @@
 //
-//  Student.swift
+//  StudentInformation.swift
 //  OnTheMap
 //
 //  Created by Edwin Rodriguez on 4/27/15.
@@ -10,7 +10,7 @@ import UIKit
 
 //StudenLocation object struct used to populate the MapView and the TableView.
 
-struct Student {
+struct StudentInformation {
     
     var firstName: String!
     var lastName: String!
@@ -32,13 +32,13 @@ struct Student {
         uniqueKey = dictionary["uniqueKey"] as! String
     }
     
-    static func studentsFromResults(results: [[String : AnyObject]]) -> [Student] {
+    static func studentsFromResults(results: [[String : AnyObject]]) -> [StudentInformation] {
         
-        var students = [Student]()
+        var students = [StudentInformation]()
         
         /* Iterate through array of dictionaries; each Student is a dictionary */
         for result in results {
-            students.append(Student(dictionary: result))
+            students.append(StudentInformation(dictionary: result))
         }
         
         return students

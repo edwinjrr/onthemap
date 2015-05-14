@@ -44,36 +44,40 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
     @IBAction func findOnTheMap(sender: AnyObject) {
         
         if mapStringTextField.text.isEmpty {
-            self.alertView("The address field is empty...")
+            self.alertView("Oops!!", message: "The address field is empty...")
         }
         else {
-            self.studentMapString = self.mapStringTextField.text
-            let regionRadius: CLLocationDistance = 2000
-            var geocoder = CLGeocoder()
-            
-            //Forward Geocoding: From address to coordinates.
-            geocoder.geocodeAddressString(studentMapString, completionHandler: {(placemarks: [AnyObject]!, error: NSError!) -> Void in
-                if let placemark = placemarks?[0] as? CLPlacemark {
-                    let coordinateRegion = MKCoordinateRegionMakeWithDistance(placemark.location.coordinate, regionRadius, regionRadius)
-                    self.locationMapView.setRegion(coordinateRegion, animated: true)
-                    self.locationMapView.addAnnotation(MKPlacemark(placemark: placemark))
-                    
-                    //Getting the coordinates
-                    self.studentLatitude = placemark.location.coordinate.latitude as Double
-                    self.studentLongitude = placemark.location.coordinate.longitude as Double
-                    
-                    self.secondStepAppearanceSetup()
-                }
-                else {
-                    self.alertView("Sorry, your address is not valid...")
-                }
-            })
+            if Reachability.isConnectedToNetwork() == true {
+                self.studentMapString = self.mapStringTextField.text
+                let regionRadius: CLLocationDistance = 2000
+                var geocoder = CLGeocoder()
+                
+                //Forward Geocoding: From address to coordinates.
+                geocoder.geocodeAddressString(studentMapString, completionHandler: {(placemarks: [AnyObject]!, error: NSError!) -> Void in
+                    if let placemark = placemarks?[0] as? CLPlacemark {
+                        let coordinateRegion = MKCoordinateRegionMakeWithDistance(placemark.location.coordinate, regionRadius, regionRadius)
+                        self.locationMapView.setRegion(coordinateRegion, animated: true)
+                        self.locationMapView.addAnnotation(MKPlacemark(placemark: placemark))
+                        
+                        //Getting the coordinates
+                        self.studentLatitude = placemark.location.coordinate.latitude as Double
+                        self.studentLongitude = placemark.location.coordinate.longitude as Double
+                        
+                        self.secondStepAppearanceSetup()
+                    }
+                    else {
+                        self.alertView("Oops!!", message: "Sorry, your address is not valid...")
+                    }
+                })
+            } else {
+               self.alertView("No Internet Connection", message: "Make sure your device is connected to the internet.")
+            }
         }
     }
     
-    func alertView(message: String) {
-        var alert = UIAlertController(title: "Oops!!", message: message, preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: .Cancel, handler: nil))
+    func alertView(title: String, message: String) {
+        var alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .Cancel, handler: nil))
         self.presentViewController(alert, animated: true, completion: nil)
     }
     
@@ -96,45 +100,48 @@ class InfoPostingViewController: UIViewController, MKMapViewDelegate, UITextFiel
         
         self.loadingView(true) //Show the user that the app is working with his request, disabling the "submit" button.
         
-        if mediaURLTextField.text.isEmpty {
-            self.loadingView(false)
-            self.alertView("The URL field is empty...")
-        }
-        else {
-            
-            studentMediaURL = mediaURLTextField.text
-          
-            if verifyURL(studentMediaURL) {
-                if self.studentLocationSubmitted == true {
-                    Client.sharedInstance().updateStudentLocation(studentMapString, mediaURL: studentMediaURL, latitude: studentLatitude, longitude: studentLongitude, completionHandler: { (success, error) -> Void in
-                        if success {
-                            self.loadingView(false)
-                            self.dismissViewControllerAnimated(true, completion: nil)
-                        }
-                        else {
-                            self.loadingView(false)
-                            self.alertView("Sorry, with couldn't update your location...")
-                        }
-                    })
-                }
-                else {
-                    Client.sharedInstance().postStudentLocation(studentMapString, mediaURL: studentMediaURL, latitude: studentLatitude, longitude: studentLongitude, completionHandler: { (success, error) -> Void in
-                        if success {
-                            self.loadingView(false)
-                            self.dismissViewControllerAnimated(true, completion: nil)
-                        }
-                        else {
-                            self.loadingView(false)
-                            self.alertView("Sorry, with couldn't submit your location...")
-                        }
-                    })
-                }
-                
+            if mediaURLTextField.text.isEmpty {
+                self.loadingView(false)
+                self.alertView("Oops!!", message: "The URL field is empty...")
             }
             else {
-                self.loadingView(false)
-                self.alertView("Sorry, your URL is not valid...")
-            }
+                
+                //Checking for internet connection first.
+                if Reachability.isConnectedToNetwork() == true {
+                
+                    studentMediaURL = mediaURLTextField.text
+                    
+                    if verifyURL(studentMediaURL) {
+                        if self.studentLocationSubmitted == true {
+                            Client.sharedInstance().updateStudentLocation(studentMapString, mediaURL: studentMediaURL, latitude: studentLatitude, longitude: studentLongitude, completionHandler: { (success, error) -> Void in
+                                if success {
+                                    self.loadingView(false)
+                                    self.dismissViewControllerAnimated(true, completion: nil)
+                                }
+                                else {
+                                    self.loadingView(false)
+                                    self.alertView("Oops!!", message: "Sorry, we couldn't update your location...")
+                                }
+                            })
+                        } else {
+                            Client.sharedInstance().postStudentLocation(studentMapString, mediaURL: studentMediaURL, latitude: studentLatitude, longitude: studentLongitude, completionHandler: { (success, error) -> Void in
+                                if success {
+                                    self.loadingView(false)
+                                    self.dismissViewControllerAnimated(true, completion: nil)
+                                }
+                                else {
+                                    self.loadingView(false)
+                                    self.alertView("Oops!!", message: "Sorry, we couldn't submit your location...")
+                                }
+                            })
+                        }
+                    } else {
+                        self.loadingView(false)
+                        self.alertView("Oops!!", message: "Sorry, your URL is not valid...")
+                    }
+                } else {
+                    self.alertView("No Internet Connection", message: "Make sure your device is connected to the internet.")
+                }
         }
     }
     
